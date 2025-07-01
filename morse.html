@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Morse Code Converter - Black & White</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #000000;
+            padding: 20px;
+            color: white;
+        }
+
+        .container {
+            background: #000000;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            border: 2px solid white;
+        }
+
+        h1 { font-size: 28px; margin-bottom: 20px; color: white; }
+
+        textarea {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid white;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            resize: vertical;
+            background: #000000;
+            color: white;
+        }
+
+        textarea:focus { border-color: white; outline: none; }
+
+        .output {
+            padding: 15px;
+            background: #000000;
+            border: 2px solid white;
+            border-radius: 10px;
+            min-height: 80px;
+            text-align: left;
+            word-wrap: break-word;
+            margin-bottom: 15px;
+            font-family: monospace;
+            font-size: 16px;
+            color: white;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            background: white;
+            color: black;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        button:hover { background: #cccccc; }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Morse Code Converter</h1>
+
+        <textarea id="textInput" rows="4" placeholder="Enter Text..." oninput="convertToMorse()"></textarea>
+        <div class="output" id="morseOutput">Morse code will appear here...</div>
+
+        <textarea id="morseInput" rows="4" placeholder="Enter Morse Code..." oninput="convertToText()"></textarea>
+        <div class="output" id="textOutput">Converted text will appear here...</div>
+
+        <div>
+            <button onclick="copyMorse()">Copy Morse</button>
+            <button onclick="playMorse()">Play Morse</button>
+        </div>
+    </div>
+
+    <script>
+        const morseCodeMap = {
+            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..',
+            'E': '.', 'F': '..-.', 'G': '--.', 'H': '....',
+            'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+            'M': '--', 'N': '-.', 'O': '---', 'P': '.--.',
+            'Q': '--.-', 'R': '.-.', 'S': '...', 'T': '-',
+            'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+            'Y': '-.--', 'Z': '--..',
+            '0': '-----', '1': '.----', '2': '..---',
+            '3': '...--', '4': '....-', '5': '.....',
+            '6': '-....', '7': '--...', '8': '---..',
+            '9': '----.',
+            ' ': '/'
+        };
+
+        const reverseMorseCodeMap = {};
+        for (let key in morseCodeMap) {
+            reverseMorseCodeMap[morseCodeMap[key]] = key;
+        }
+
+        function convertToMorse() {
+            const input = document.getElementById('textInput').value.toUpperCase();
+            let morse = '';
+            for (let char of input) {
+                if (morseCodeMap[char]) {
+                    morse += morseCodeMap[char] + ' ';
+                }
+            }
+            document.getElementById('morseOutput').textContent = morse.trim() || 'Morse code will appear here...';
+        }
+
+        function convertToText() {
+            const morseInput = document.getElementById('morseInput').value.trim();
+            const words = morseInput.split(' / ');
+            let result = '';
+
+            for (let word of words) {
+                const letters = word.split(' ');
+                for (let letter of letters) {
+                    result += reverseMorseCodeMap[letter] || '';
+                }
+                result += ' ';
+            }
+
+            document.getElementById('textOutput').textContent = result.trim() || 'Converted text will appear here...';
+        }
+
+        function copyMorse() {
+            const morseText = document.getElementById('morseOutput').textContent;
+            if (morseText && morseText !== 'Morse code will appear here...') {
+                navigator.clipboard.writeText(morseText).then(() => {
+                    alert('Morse code copied to clipboard!');
+                });
+            }
+        }
+
+        function playMorse() {
+            const morseText = document.getElementById('morseOutput').textContent;
+            if (!morseText || morseText === 'Morse code will appear here...') return;
+
+            const dotDuration = 100; // milliseconds
+            let time = 0;
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+            for (let char of morseText) {
+                if (char === '.') {
+                    playBeep(ctx, time, dotDuration);
+                    time += dotDuration + 100;
+                } else if (char === '-') {
+                    playBeep(ctx, time, dotDuration * 3);
+                    time += dotDuration * 3 + 100;
+                } else if (char === ' ') {
+                    time += dotDuration * 2;
+                } else if (char === '/') {
+                    time += dotDuration * 4;
+                }
+            }
+        }
+
+        function playBeep(ctx, startTime, duration) {
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(600, ctx.currentTime + startTime / 1000);
+
+            oscillator.start(ctx.currentTime + startTime / 1000);
+            oscillator.stop(ctx.currentTime + (startTime + duration) / 1000);
+        }
+    </script>
+
+</body>
+</html>
