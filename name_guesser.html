@@ -45,10 +45,10 @@
         .hidden {
             display: none;
         }
-        .loading-logo {
+        .loading-emoji {
+            font-size: 60px;
+            display: inline-block;
             animation: spin 2s linear infinite;
-            width: 60px;
-            height: 60px;
             margin: 20px auto;
         }
         @keyframes spin {
@@ -60,6 +60,7 @@
 <body>
 
 <div class="container" id="mainContainer">
+    <!-- Input Section -->
     <div id="inputSection">
         <div class="emoji">🔮</div>
         <h2>I can read your mind and guess your name!</h2>
@@ -68,11 +69,13 @@
         <button onclick="startReading()">Read My Mind! 🧠</button>
     </div>
 
+    <!-- Loading Section -->
     <div id="loadingSection" class="hidden">
-        <img src="your_logo_url_here" alt="Loading" class="loading-logo">
+        <div class="loading-emoji">🔮</div>
         <p>Reading your mind...</p>
     </div>
 
+    <!-- Result Section -->
     <div id="resultSection" class="hidden">
         <div class="emoji">✨</div>
         <h2>Your name is...</h2>
@@ -93,11 +96,12 @@
         document.getElementById('inputSection').classList.add('hidden');
         document.getElementById('loadingSection').classList.remove('hidden');
 
+        // Simulate loading for 2 seconds
         setTimeout(() => {
             document.getElementById('loadingSection').classList.add('hidden');
             document.getElementById('resultSection').classList.remove('hidden');
             document.getElementById('guessedName').innerText = name;
-        }, 2000); // Loading time
+        }, 2000);
     }
 
     function tryAgain() {
