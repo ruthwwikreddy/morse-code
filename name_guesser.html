@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mind Reader Prank</title>
+    <style>
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .emoji {
+            font-size: 50px;
+        }
+        input {
+            padding: 10px;
+            font-size: 18px;
+            width: 80%;
+            margin-top: 20px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+        }
+        button {
+            margin-top: 20px;
+            background-color: #8e44ad;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        .loading-logo {
+            animation: spin 2s linear infinite;
+            width: 60px;
+            height: 60px;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg);}
+            100% { transform: rotate(360deg);}
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+    <div id="inputSection">
+        <div class="emoji">🔮</div>
+        <h2>I can read your mind and guess your name!</h2>
+        <input type="text" id="nameInput" placeholder="Type your name here">
+        <br>
+        <button onclick="startReading()">Read My Mind! 🧠</button>
+    </div>
+
+    <div id="loadingSection" class="hidden">
+        <img src="your_logo_url_here" alt="Loading" class="loading-logo">
+        <p>Reading your mind...</p>
+    </div>
+
+    <div id="resultSection" class="hidden">
+        <div class="emoji">✨</div>
+        <h2>Your name is...</h2>
+        <h1 id="guessedName"></h1>
+        <p style="color: green;">Amazing! I was right! 🎯</p>
+        <button onclick="tryAgain()">Try Again 🔄</button>
+    </div>
+</div>
+
+<script>
+    function startReading() {
+        const name = document.getElementById('nameInput').value.trim();
+        if (name === '') {
+            alert('Please enter your name!');
+            return;
+        }
+
+        document.getElementById('inputSection').classList.add('hidden');
+        document.getElementById('loadingSection').classList.remove('hidden');
+
+        setTimeout(() => {
+            document.getElementById('loadingSection').classList.add('hidden');
+            document.getElementById('resultSection').classList.remove('hidden');
+            document.getElementById('guessedName').innerText = name;
+        }, 2000); // Loading time
+    }
+
+    function tryAgain() {
+        document.getElementById('nameInput').value = '';
+        document.getElementById('resultSection').classList.add('hidden');
+        document.getElementById('inputSection').classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>
